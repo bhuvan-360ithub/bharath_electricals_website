@@ -1,102 +1,115 @@
-<script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+<template>
+  <div class="hero-carousel">
+    <swiper
+      :modules="[Pagination, Autoplay]"
+      :slides-per-view="1"
+      :loop="true"
+      :autoplay="{
+        delay: 3000,
+        disableOnInteraction: false
+      }"
+      :pagination="{
+        clickable: true,
+        el: '.custom-pagination',
+        renderBullet: customPagination
+      }"
+      class="hero-swiper"
+    >
+      <swiper-slide v-for="(image, index) in images" :key="index">
+        <img :src="image" class="carousel-image" />
+      </swiper-slide>
+    </swiper>
 
-interface Slide {
-  id: number
-  image: string
-}
+    <div class="custom-pagination"></div>
+  </div>
+</template>
 
-const slides: Slide[] = [
-  {
-    id: 1,
-    image: '/src/assets/Banner-1.png',
+<script>
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Pagination, Autoplay } from 'swiper/modules'
+
+import 'swiper/css'
+import 'swiper/css/pagination'
+
+import banner1 from '/src/assets/Banner-1.png'
+import banner2 from '/src/assets/Banner-2.png'
+import banner3 from '/src/assets/Banner-3.png'
+
+export default {
+  components: {
+    Swiper,
+    SwiperSlide
   },
-  {
-    id: 2,
-    image: '/src/assets/Banner-2.png',
+  setup() {
+    return {
+      Pagination,
+      Autoplay
+    }
   },
-  {
-    id: 3,
-    image: '/src/assets/Banner-1.png',
+  data() {
+    return {
+      images: [banner1, banner2, banner3]
+    }
   },
-]
-
-const currentSlide = ref(0)
-const autoplayInterval = ref<number | null>(null)
-
-const nextSlide = () => {
-  currentSlide.value = (currentSlide.value + 1) % slides.length
-}
-
-const prevSlide = () => {
-  currentSlide.value = (currentSlide.value - 1 + slides.length) % slides.length
-}
-
-const goToSlide = (index: number) => {
-  currentSlide.value = index
-}
-
-const startAutoplay = () => {
-  stopAutoplay()
-  autoplayInterval.value = window.setInterval(nextSlide, 5000)
-}
-
-const stopAutoplay = () => {
-  if (autoplayInterval.value !== null) {
-    clearInterval(autoplayInterval.value)
-    autoplayInterval.value = null
+  methods: {
+    customPagination(index, className) {
+      return `<span class="${className} custom-bullet"></span>`
+    }
   }
 }
-
-onMounted(() => startAutoplay())
-onBeforeUnmount(() => stopAutoplay())
 </script>
 
-<template>
-  <section class="relative flex justify-center bg-gray-100 py-4 sm:py-8 md:py-10 lg:py-12 xl:py-16">
-    <div class="relative w-[90%] max-w-screen-2xl mx-auto overflow-hidden rounded-lg md:mt-16">
-      <div class="relative flex h-[300px] md:h-[500px]">
-        <div
-          v-for="(slide, index) in slides"
-          :key="slide.id"
-          class="absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out"
-          :class="index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'"
-        >
-          <img
-            :src="slide.image"
-            alt="Slide Image"
-            class="w-full h-full object-contain"
-          />
-        </div>
-      </div>
+<style scoped>
+.hero-carousel {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
 
-      <button
-        class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 z-30"
-        @click="prevSlide"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7 7-7" />
-        </svg>
-      </button>
+.carousel-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
-      <button
-        class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 z-30"
-        @click="nextSlide"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+.custom-pagination {
+  position: absolute;
+  bottom: 15px; 
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 6px; 
+  z-index: 10;
+}
 
-      <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-30">
-        <button
-          v-for="(slide, index) in slides"
-          :key="`dot-${slide.id}`"
-          class="w-3 h-3 rounded-full transition-all duration-300"
-          :class="index === currentSlide ? 'bg-orange-500 scale-125' : 'bg-gray-300'"
-          @click="goToSlide(index)"
-        ></button>
-      </div>
-    </div>
-  </section>
-</template>
+.custom-bullet {
+  width: 10px;
+  height: 10px;
+  background-color: transparent; 
+  border: 2px solid #c80000; 
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #000; 
+  border-color: #000; 
+  width: 12px; 
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swiper-pagination-bullet-active::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  display: block;
+}
+</style>

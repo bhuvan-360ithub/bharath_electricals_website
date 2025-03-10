@@ -30,7 +30,6 @@
         </swiper-slide>
       </swiper>
 
-      <!-- Pagination Buttons (appear on hover) -->
       <transition name="pagination-slide">
         <div v-if="showPagination" class="pagination-buttons">
           <button class="nav-button" @click="prevSlide"><i class="pi pi-chevron-left"></i></button>
@@ -44,9 +43,9 @@
 <script>
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Autoplay } from 'swiper/modules';
-import ProductCard from './ProductCard.vue';
 import 'swiper/swiper-bundle.css';
 import 'primeicons/primeicons.css';
+import ProductCard from './ProductCard.vue';
 
 export default {
   components: {
@@ -58,11 +57,16 @@ export default {
     return {
       showPagination: false,
       categories: [
-        { name: 'Water Heater', price: '1999', image: '/src/assets/Water-heater.png' },
-        { name: 'Cooler', price: '2499', image: '/src/assets/cooler.png' },
-        { name: 'Coupler', price: '599', image: '/src/assets/coupler.png' },
-        { name: 'Isolator', price: '899', image: '/src/assets/isolator.png' },
-        { name: 'Ldc wire', price: '1499', image: '/src/assets/ldc-wire.png' },
+        { 
+          name: 'Water Heater', 
+          price: '1999', 
+          images: ['/src/assets/Water-heater.png', '/src/assets/Water-heater-hover.png']
+        },
+        { 
+          name: 'Cooler', 
+          price: '2499', 
+          images: ['/src/assets/cooler.png']
+        }
       ]
     };
   },
@@ -100,6 +104,10 @@ export default {
   margin-bottom: 20px;
 }
 
+.swiper-container {
+  position: relative;
+}
+
 .pagination-buttons {
   position: absolute;
   bottom: 0;
@@ -108,26 +116,14 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 0 20px;
-  transform: translateY(100%);
-  opacity: 0;
-  transition: all 0.3s ease;
-}
-
-.shop-by-category:hover .pagination-buttons {
-  transform: translateY(-20px);
-  opacity: 1;
 }
 
 .nav-button {
   background: black;
   color: white;
-  border: none;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
 }
 </style>

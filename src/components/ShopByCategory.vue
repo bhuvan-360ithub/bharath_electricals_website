@@ -1,166 +1,117 @@
 <template>
-    <div class="shop-by-category">
-      <h2 class="title">Shop By Category</h2>
-      <p class="subtitle">The best quality products are waiting for you & choose it now.</p>
-  
-      <swiper
-        :modules="[Autoplay, Pagination]"
-        :slidesPerView="5"
-        :spaceBetween="20"
-        :loop="true"
-        :autoplay="{
-          delay: 2500,
-          disableOnInteraction: false
-        }"
-        :pagination="{
-          clickable: true
-        }"
-        :breakpoints="{
-          320: { slidesPerView: 2, spaceBetween: 10 }, 
-          768: { slidesPerView: 3, spaceBetween: 15 }, 
-          1024: { slidesPerView: 5, spaceBetween: 20 } 
-        }"
-        class="category-swiper"
-      >
-        <swiper-slide v-for="(category, index) in categories" :key="index">
-          <div class="category-card">
-            <div class="category-image" :style="{ backgroundImage: `url(${category.image})` }"></div>
-            <button class="category-button">{{ category.name }}</button>
-          </div>
-        </swiper-slide>
-      </swiper>
+  <div class="relative w-full overflow-hidden p-4 py-8" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold">Popular Products</h2>
+      <div class="flex space-x-2">
+        <button class="p-3 bg-gray-200 rounded-full flex items-center justify-center" @click="prevSlide">
+          <i class="pi pi-chevron-left text-md"></i>
+        </button>
+        <button class="p-3 bg-gray-200 rounded-full flex items-center justify-center" @click="nextSlide">
+          <i class="pi pi-chevron-right text-md"></i>
+        </button>
+      </div>
     </div>
-  </template>
-  
-  <script>
-  import { Swiper, SwiperSlide } from 'swiper/vue';
-  import { Autoplay, Pagination } from 'swiper/modules';
-  import 'swiper/swiper-bundle.css';
-  
-  export default {
-    components: {
-      Swiper,
-      SwiperSlide
-    },
-    data() {
-      return {
-        categories: [
-          { name: 'Water Heater', image: '/src/assets/Water-heater.png' },
-          { name: 'Cooler', image: '/src/assets/cooler.png' },
-          { name: 'Coupler', image: '/src/assets/coupler.png' },
-          { name: 'Isolator', image: '/src/assets/isolator.png' },
-          { name: 'Ldc wire', image: '/src/assets/ldc-wire.png' },
-          { name: 'MCB', image: '/src/assets/mcb.png' },
-          { name: 'Pedestral fan', image: '/src/assets/pedestral-fan.png' },
-          { name: 'Polycab Wires', image: '/src/assets/polycab-wires.png' },
-          { name: 'Pump V8', image: '/src/assets/pump-v8.png' },
-          { name: 'Slip Type Bend', image: '/src/assets/sliptypebend.png' },
-          { name: 'Speaker Cables', image: '/src/assets/speakercables.png' },
-          { name: 'Round Tee', image: '/src/assets/round-tee.png' }
-        ]
-      };
-    },
-    setup() {
-      return {
-        Autoplay,
-        Pagination
-      };
+    <div
+      class="flex transition-transform duration-500"
+      :style="{ transform: `translateX(-${currentIndex * cardWidth}px)` }"
+      ref="carousel"
+    >
+      <ProductCard v-for="(product, index) in duplicatedProducts" :key="index" :product="product" :cardWidth="cardWidth" />
+    </div>
+    <div class="flex justify-center mt-6">
+      <button class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700">See All</button>
+    </div>
+  </div>
+</template>
+
+<script>
+import ProductCard from "./CardComponent.vue";
+import "primeicons/primeicons.css";
+
+export default {
+  components: { ProductCard },
+  data() {
+    return {
+      products: [
+        { name: 'Water Heater', price: 12, image: '/src/assets/Water-heater.png' },
+        { name: 'Cooler', price: 8, image: '/src/assets/cooler.png' },
+        { name: 'Coupler', price: 10, image: '/src/assets/coupler.png' },
+        { name: 'LDC Wire', price: 16, image: '/src/assets/ldc-wire.png' },
+        { name: 'MCB', price: 16, image: '/src/assets/mcb.png' },
+        { name: 'Pedestral Fan', price: 16, image: '/src/assets/pedestral-fan.png' },
+        { name: 'Polycab Wires', price: 16, image: '/src/assets/polycab-wires.png' },
+        { name: 'Pump V8', price: 16, image: '/src/assets/pump-v8.png' },
+        { name: 'Round Tee', price: 16, image: '/src/assets/round-tee.png' },
+        { name: 'Slip Type Bend', price: 16, image: '/src/assets/sliptypebend.png' },
+      ],
+      currentIndex: 0,
+      cardWidth: 0,
+      isDragging: false,
+      startX: 0,
+      dragOffset: 0,
+    };
+  },
+  computed: {
+    duplicatedProducts() {
+      return [...this.products, ...this.products];
     }
-  };
-  </script>
-  
-  <style scoped>
-  .shop-by-category {
-    text-align: center;
-    padding: 20px;
-  }
-  
-  .title {
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .subtitle {
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 20px;
-  }
-  
-  .category-swiper {
-    padding: 20px 0;
-  }
-  
-  .category-image {
-    width: 100%;
-    padding-top: 100%;
-    background-size: cover;
-    background-position: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    transition: transform 0.5s ease; 
-    border-radius: 20px;
-}
+  },
+  mounted() {
+    this.updateCardWidth();
+    window.addEventListener('resize', this.updateCardWidth);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateCardWidth);
+  },
+  methods: {
+    updateCardWidth() {
+      if (window.innerWidth < 640) {
+        this.cardWidth = window.innerWidth - 40;
+      } else if (window.innerWidth < 1024) {
+        this.cardWidth = (window.innerWidth - 80) / 3;
+      } else {
+        this.cardWidth = (window.innerWidth - 100) / 4;
+      }
+    },
+    nextSlide() {
+      if (this.currentIndex >= this.products.length) {
+        this.currentIndex = 0;
+      }
+      this.currentIndex++;
+    },
+    prevSlide() {
+      if (this.currentIndex <= 0) {
+        this.currentIndex = this.products.length;
+      }
+      this.currentIndex--;
+    },
+    startDrag(event) {
+      this.isDragging = true;
+      this.startX = event.clientX;
+    },
+    onDrag(event) {
+      if (!this.isDragging) return;
+      const moveX = event.clientX - this.startX;
+      if (moveX > 50) {
+        this.prevSlide();
+        this.isDragging = false;
+      } else if (moveX < -50) {
+        this.nextSlide();
+        this.isDragging = false;
+      }
+    },
+    endDrag() {
+      this.isDragging = false;
+    }
+  },
+};
+</script>
 
-.category-card:hover .category-image {
-    transform: scale(1.1);
-    
+<style>
+button {
+  transition: background-color 0.3s;
 }
-
-.category-card {
-    position: relative;
-    width: 100%;
-    padding-top: 100%; 
-    overflow: hidden;
-    margin-bottom: 20px;
+button:hover {
+  background-color: #d6d6d6;
 }
-
-  
-.category-button {
-    position: absolute;
-    bottom: 20px;
-    left: 10px; 
-    right: 10px; 
-    width: calc(100% - 20px); 
-    padding: 8px 0;
-    background: rgb(0, 0, 0);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 14px !important;
-    cursor: pointer;
-    transition: background 0.3s ease, color 0.3s ease;
-    text-align: center;
-    box-sizing: border-box;
-}
-
-  
-  .category-card:hover .category-image {
-    transform: scale(1.1);
-  }
-  
-  .category-card:hover .category-button {
-    background: #007bff;
-    color: white;
-  }
-  
-  .swiper-pagination {
-    position: absolute;
-    margin-top: 5px;
-    bottom: -5px;
-    text-align: center;
-    width: 100%;
-  }
-  
-  .swiper-pagination-bullet {
-    background: #ccc;
-    opacity: 1;
-  }
-  
-  .swiper-pagination-bullet-active {
-    background: #007bff;
-  }
-  </style>
-  
+</style>
