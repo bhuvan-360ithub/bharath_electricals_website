@@ -1,6 +1,15 @@
 <template>
-    <div class="brands-container">
-      <h2 class="text-2xl font-bold text-center mb-6">Brands We Deal With</h2>
+    <div class="brands-container py-20">
+      <div class="flex flex-nowrap items-center justify-center md:justify-start gap-4 mb-4">
+  <div class="w-8 h-0.5 bg-blue-500"></div>
+  <h2 class="text-lg md:text-xl font-medium uppercase tracking-widest">Brands We Deal with</h2>
+</div>
+
+<!-- Headline -->
+<h1 class="text-3xl md:text-4xl font-semibold leading-snug text-center mb-12">
+  <span class="text-blue-700">Trusted Brands, </span>Quality Electrical Supplies Offered
+</h1>
+
       <div class="brands-slider">
         <!-- Gradient overlay -->
         <div class="gradient-overlay left"></div>

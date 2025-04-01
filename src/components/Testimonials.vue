@@ -1,118 +1,93 @@
 <template>
-    <div class="relative w-full overflow-hidden p-4 py-8" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold">Popular Products</h2>
-        <div class="flex space-x-2">
-          <button class="p-3 bg-gray-200 rounded-full flex items-center justify-center" @click="prevSlide">
-            <i class="pi pi-chevron-left text-md"></i>
-          </button>
-          <button class="p-3 bg-gray-200 rounded-full flex items-center justify-center" @click="nextSlide">
-            <i class="pi pi-chevron-right text-md"></i>
-          </button>
-        </div>
-      </div>
-      <div
-        class="flex transition-transform duration-500"
-        :style="{ transform: `translateX(-${currentIndex * cardWidth}px)` }"
-        ref="carousel"
-      >
-        <ProductCard v-for="(product, index) in duplicatedProducts" :key="index" :product="product" :cardWidth="cardWidth" />
-      </div>
-      <div class="flex justify-center mt-6">
-        <button class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700">See All</button>
-      </div>
+  <div class="bg-white text-black py-20 px-6 lg:px-12">
+    <!-- Header -->
+    <div class="flex flex-nowrap items-center justify-center md:justify-start gap-4 mb-4">
+      <div class="w-8 h-0.5 bg-blue-500"></div>
+      <h2 class="text-lg md:text-xl font-medium uppercase tracking-widest">Testimonials</h2>
     </div>
-  </template>
-  
-  <script>
-  import ProductCard from "./TestimonialCard.vue";
-  import "primeicons/primeicons.css";
-  
-  export default {
-    components: { ProductCard },
-    data() {
-      return {
-        products: [
-          { name: 'Water Heater', price: 12, image: '/src/assets/Water-heater.png' },
-          { name: 'Cooler', price: 8, image: '/src/assets/cooler.png' },
-          { name: 'Coupler', price: 10, image: '/src/assets/coupler.png' },
-          { name: 'LDC Wire', price: 16, image: '/src/assets/ldc-wire.png' },
-          { name: 'MCB', price: 16, image: '/src/assets/mcb.png' },
-          { name: 'Pedestral Fan', price: 16, image: '/src/assets/pedestral-fan.png' },
-          { name: 'Polycab Wires', price: 16, image: '/src/assets/polycab-wires.png' },
-          { name: 'Pump V8', price: 16, image: '/src/assets/pump-v8.png' },
-          { name: 'Round Tee', price: 16, image: '/src/assets/round-tee.png' },
-          { name: 'Slip Type Bend', price: 16, image: '/src/assets/sliptypebend.png' },
-        ],
-        currentIndex: 0,
-        cardWidth: 0,
-        isDragging: false,
-        startX: 0,
-        dragOffset: 0,
-      };
-    },
-    computed: {
-      duplicatedProducts() {
-        return [...this.products, ...this.products];
-      }
-    },
-    mounted() {
-      this.updateCardWidth();
-      window.addEventListener('resize', this.updateCardWidth);
-    },
-    beforeUnmount() {
-      window.removeEventListener('resize', this.updateCardWidth);
-    },
-    methods: {
-      updateCardWidth() {
-        if (window.innerWidth < 640) {
-          this.cardWidth = window.innerWidth - 40;
-        } else if (window.innerWidth < 1024) {
-          this.cardWidth = (window.innerWidth - 80) / 3;
-        } else {
-          this.cardWidth = (window.innerWidth - 100) / 4;
-        }
-      },
-      nextSlide() {
-        if (this.currentIndex >= this.products.length) {
-          this.currentIndex = 0;
-        }
-        this.currentIndex++;
-      },
-      prevSlide() {
-        if (this.currentIndex <= 0) {
-          this.currentIndex = this.products.length;
-        }
-        this.currentIndex--;
-      },
-      startDrag(event) {
-        this.isDragging = true;
-        this.startX = event.clientX;
-      },
-      onDrag(event) {
-        if (!this.isDragging) return;
-        const moveX = event.clientX - this.startX;
-        if (moveX > 50) {
-          this.prevSlide();
-          this.isDragging = false;
-        } else if (moveX < -50) {
-          this.nextSlide();
-          this.isDragging = false;
-        }
-      },
-      endDrag() {
-        this.isDragging = false;
-      }
-    },
-  };
-  </script>
-  
-  <style>
-  button {
-    transition: background-color 0.3s;
-  }
-  button:hover {
-    background-color: #d6d6d6;
-  }
-  </style>
-  
+
+    <!-- Headline -->
+    <h1 class="text-3xl md:text-4xl font-semibold leading-snug text-center mb-12">
+      What <span class="text-blue-700">Our Clients</span> Say About Us
+    </h1>
+
+    <!-- Testimonials Section -->
+    <div class="max-w-5xl mx-auto relative">
+      <swiper :modules="[Autoplay, Pagination]" :slides-per-view="1" :loop="true" :autoplay="{ delay: 5000 }" :pagination="{ clickable: true }">
+        <swiper-slide v-for="(testimonial, index) in testimonials" :key="index">
+          <div class="text-center flex flex-col items-center">
+            <i class="pi pi-quote-left text-4xl text-black mb-4"></i>
+            <p class="text-lg text-gray-800 mb-4 line-clamp-3">{{ testimonial.text }}</p>
+            <div class="flex items-center gap-4">
+              <img :src="userImage" alt="User" class="w-12 h-12 rounded-full border border-gray-300" />
+              <div class="text-left">
+                <p class="text-black font-semibold">{{ testimonial.name }}</p>
+                <p class="text-gray-600 text-sm">{{ testimonial.company }}</p>
+              </div>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper>
+      <div class="swiper-pagination mt-12"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import { Autoplay, Pagination } from 'swiper/modules';
+import 'primeicons/primeicons.css';
+
+// Import local image
+import userImage from '../assets/user.png';
+
+export default {
+  components: {
+    Swiper,
+    SwiperSlide,
+  },
+  setup() {
+    return { Autoplay, Pagination };
+  },
+  data() {
+    return {
+      userImage,
+      testimonials: [
+        {
+          text: 'For Sri Varalakshmi Constructions Bharath Electricals has been an invaluable partner. Their consistent supply and competitive pricing have greatly assisted in managing our project expenses. Mr Ramesh Kumars team is always available and professional. Their dedication to customer service is exceptional. We strongly endorse Bharath Electricals for all electrical supply needs. They have helped us complete projects on time and within budget which is crucial for our business.',
+          name: 'Ramesh Kumar',
+          company: 'Sri Varalakshmi Constructions, Chennai',
+        },
+        {
+          text: 'As Kaveri Electrical Solutions we prioritize quality and reliability. Bharath Electricals consistently meets our expectations. Their extensive product range and timely deliveries make them our preferred supplier. Ms Priyas meticulous attention to detail and prompt responses are always appreciated. We value their partnership and recommend them to any business seeking dependable electrical supplies. Their support has streamlined our operations.',
+          name: 'Priya Srinivas',
+          company: 'Kaveri Electrical Solutions, Bengaluru',
+        },
+        {
+          text: 'Godavari Power Systems has benefited significantly from partnering with Bharath Electricals. Their knowledgeable staff particularly Mr Anand provided invaluable assistance in selecting the appropriate products for our projects. Their swift delivery and ongoing support are essential for our operations. We appreciate their commitment to customer satisfaction and their ability to provide solutions tailored to our specific needs. They are a reliable and trustworthy supplier.',
+          name: 'Prakash Kumar',
+          company: 'Godavari Power Systems, Hyderabad',
+        },
+      ],
+    };
+  },
+};
+</script>
+
+<style scoped>
+.swiper-pagination-bullet {
+  background: black;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.swiper-pagination {
+  position: relative;
+  margin-top: 40px;
+}
+</style>

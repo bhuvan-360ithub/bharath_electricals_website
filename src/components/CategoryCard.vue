@@ -1,8 +1,14 @@
 <template>
   <div class="category-card">
-    <img :src="category.image" :alt="category.name" class="category-image" />
-    <h3 class="category-name">{{ category.name }}</h3>
-    <p class="category-products">{{ category.products }} Products</p>
+    <!-- Image Container -->
+    <div class="image-wrapper">
+      <img :src="category.image" :alt="category.name" class="category-image" />
+    </div>
+
+    <!-- Category Label -->
+    <div class="category-label">
+      {{ category.name }}
+    </div>
   </div>
 </template>
 
@@ -16,36 +22,52 @@ defineProps({
 </script>
 
 <style scoped>
+/* Card Container */
 .category-card {
-  flex: 0 0 auto;
-  width: 100%;
-  max-width: 260px;
-  height: 320px;
+  width: 260px;
+  height: 180px; /* Adjust height for proportions */
+  border-radius: 12px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  position: relative;
+  background: white;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  padding: 16px;
-  box-sizing: border-box;
 }
 
+/* Image Wrapper */
+.image-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Image Styling */
 .category-image {
-  width: 120px;
-  height: 120px;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
 }
 
-.category-name {
-  font-weight: 600;
-  margin-top: 12px;
+/* Image Hover Effect */
+.category-card:hover .category-image {
+  transform: scale(1.1);
 }
 
-.category-products {
-  color: gray;
+/* Category Label */
+.category-label {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  color: black;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 20px;
   font-size: 14px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

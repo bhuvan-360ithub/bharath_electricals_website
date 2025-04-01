@@ -1,34 +1,26 @@
 <template>
-  <div 
-    class="product-card"
-    @mouseenter="isHovered = true"
-    @mouseleave="isHovered = false"
-  >
-    <div class="product-image-wrapper">
-      <div 
-        class="product-image"
-        :style="{ backgroundImage: `url(${currentImage})`, transform: isHovered && product.images?.length === 1 ? 'scale(1.1)' : 'scale(1)' }"
-      ></div>
+  <div class="card" @mouseover="hover = true" @mouseleave="hover = false">
+    <div class="image-wrapper">
+      <img :src="product.image" alt="Product Image" class="product-image" />
+      <span v-if="product.offer" class="offer-pill">{{ product.offer }}</span>
+
+      <button class="eye-button" :class="{ 'visible': hover || isMobile }" @click="viewProduct">
+        <i class="pi pi-eye"></i>
+      </button>
+
+
+      <button class="add-to-cart" :class="{ 'visible': hover || isMobile }" @click="addToCart">
+        Add to Cart
+      </button>
     </div>
+    <p class="product-name">{{ product.name }}</p>
 
-    <!-- Product Info (outside image) -->
-    <div class="product-info">
-      <h4 class="product-name">{{ product.name }}</h4>
-      <div class="rating">
-        <i class="pi pi-star-fill" v-for="n in 5" :key="n"></i>
+    <!-- Fullscreen Modal -->
+    <div v-if="isModalOpen" class="modal">
+      <div class="modal-content">
+        <button class="close-btn" @click="isModalOpen = false">✕</button>
+        <img :src="product.image" alt="Product Image" class="full-image" />
       </div>
-      <div class="price">₹{{ product.price }}</div>
-    </div>
-
-    <!-- Hover buttons (top-right) & Add to Cart (slide-up) -->
-    <div class="hover-content" v-if="isHovered">
-      <div class="hover-buttons">
-        <button class="icon-btn"><i class="pi pi-heart"></i></button>
-        <button class="icon-btn"><i class="pi pi-clone"></i></button>
-        <button class="icon-btn"><i class="pi pi-eye"></i></button>
-      </div>
-
-      <button class="add-to-cart-btn">Add To Cart</button>
     </div>
   </div>
 </template>
@@ -36,131 +28,172 @@
 <script>
 export default {
   props: {
-    product: {
-      type: Object,
-      required: true
-    }
+    product: Object // Expecting an object with { image, name, offer }
   },
   data() {
     return {
-      isHovered: false,
-      imageIndex: 0
+      hover: false,
+      isMobile: false,
+      isModalOpen: false
     };
   },
-  computed: {
-    currentImage() {
-      if (this.isHovered && this.product.images?.length > 1) {
-        return this.product.images[1];
-      }
-      return this.product.images[0];
+  mounted() {
+    this.checkMobile();
+    window.addEventListener("resize", this.checkMobile);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.checkMobile);
+  },
+  methods: {
+    checkMobile() {
+      this.isMobile = window.innerWidth <= 768;
+    },
+    addToCart() {
+      alert(`Added ${this.product.name} to cart!`);
+    },
+    viewProduct() {
+      this.isModalOpen = true;
     }
   }
 };
 </script>
 
 <style scoped>
-.product-card {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+.card {
   position: relative;
+  width: 260px; /* Increased width */
+  background: transparent;
   cursor: pointer;
-  background: none;
 }
-
-/* Image Wrapper */
-.product-image-wrapper {
-  width: 100%;
-  padding-top: 135%;
-  overflow: hidden;
+@media (max-width: 768px) {
+  .card {
+    width: 100%; /* Full width on mobile */
+  }
+}
+.image-wrapper {
   position: relative;
+  overflow: hidden;
 }
 
 .product-image {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  transition: transform 0.4s ease, opacity 0.3s ease;
+  width: 100%; /* Adjusted to fit container */
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+  border-radius: 12px;
 }
 
-/* Info Section (outside image) */
-.product-info {
-  text-align: left;
-  padding: 10px;
+.card:hover .product-image {
+  transform: scale(1.05);
 }
 
-.product-name {
-  font-size: 16px;
-  font-weight: bold;
-  margin: 5px 0;
-  color: #333;
-}
-
-.rating {
-  color: #f7b500;
-  margin: 5px 0;
-}
-
-.price {
-  font-size: 16px;
-  color: #000;
-  font-weight: bold;
-}
-
-/* Hover Buttons (top-right corner) */
-.hover-content {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  pointer-events: none;
-}
-
-.hover-buttons {
+.offer-pill {
   position: absolute;
   top: 10px;
-  right: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  pointer-events: all;
+  left: 10px;
+  background: red;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
 }
 
-.icon-btn {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
+.eye-button,
+.add-to-cart {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.eye-button {
+  top: 10px;
+  right: -50px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  cursor: pointer;
+  border-radius: 50%;
+  
 }
 
-.icon-btn:hover {
-  background: #f0f0f0;
+.card:hover .eye-button,
+.eye-button.visible {
+  right: 10px;
+  opacity: 1;
 }
 
-/* Add To Cart Button (slides up on hover) */
-.add-to-cart-btn {
-  background: black;
+.add-to-cart {
+  bottom: -50px;
+  left: 5%;
+  width: 90%;
+  background: blue;
+  border-radius: 8px;
+}
+
+.card:hover .add-to-cart,
+.add-to-cart.visible {
+  bottom: 10px;
+  opacity: 1;
+}
+
+.product-name {
+  text-align: left;
+  margin-top: 8px;
+  font-size: 18px;
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.full-image {
+  width: 80vw;  /* Make it take 90% of the viewport width */
+  height: auto; /* Maintain aspect ratio */
+  max-height: 90vh; /* Limit height to 90% of the viewport height */
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: red;
   color: white;
   border: none;
-  padding: 12px 0;
-  font-weight: bold;
-  font-size: 14px;
-  width: 100%;
-  border-radius: 0;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-  pointer-events: all;
-}
-
-.product-card:hover .add-to-cart-btn {
-  transform: translateY(0);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 50%;
 }
 </style>

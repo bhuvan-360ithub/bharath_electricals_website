@@ -1,56 +1,80 @@
 <template>
-  <div class="flex flex-col md:flex-row items-center md:items-center gap-8 p-6 py-12 md:p-12">
-    <!-- Left Side Image -->
-    <div class="md:w-1/2 flex justify-center">
-      <img 
-        src="/src/assets/About-1.png" 
-        alt="Section Image" 
-        class="w-84 h-84 object-cover rounded-xl"
-      >
+  <div class="container mx-auto py-20 p-6 md:p-10 flex flex-col md:flex-row items-center gap-16">
+    <!-- Left Section - Image -->
+    <div class="flex-1 flex justify-center items-center">
+      <div class="w-full max-w-lg aspect-w-1 aspect-h-1">
+        <img 
+          src="/src/assets/About-1.png" 
+          alt="Cleaning Service" 
+          class="rounded-[40px] w-full h-full object-cover shadow-xl"
+        />
+      </div>
     </div>
 
-    <!-- Right Side Content -->
-    <div class="md:w-1/2 flex flex-col justify-center text-left">
-      <h3 class="text-lg font-semibold text-gray-600">About</h3>
-      <h2 class="text-2xl font-bold text-gray-900 mt-2">Some Title of Section</h2>
-      <p class="text-gray-700 mt-3">
-        This is a sample paragraph that explains the section. It can have multiple lines,
-        and the image on the left will automatically adjust its height accordingly.
-        The goal is to keep everything well-aligned and visually appealing.
+    <!-- Right Section - Content -->
+    <div class="flex-1 text-center md:text-left space-y-6">
+      <div class="flex justify-center md:justify-start items-center gap-4">
+        <div class="w-8 h-0.5 bg-blue-500"></div>
+        <h2 class="text-lg font-medium uppercase tracking-widest">ABOUT US</h2>
+      </div>
+      <h3 class="text-3xl md:text-4xl font-semibold leading-snug">
+        Your Reliable Partner for <span class="text-blue-600">Electrical
+          Wholesale Needs.</span>  
+      </h3>
+      <p class="text-sm md:text-md text-gray-700 leading-relaxed">
+        Bharath Electricals stands as your reliable partner for comprehensive electrical wholesale needs. We offer an extensive product range, ensuring quality and timely delivery. Our commitment is to empower your business with competitive pricing, expert support, and unwavering reliability, building lasting partnerships.
       </p>
-
-      <!-- 3 Points with Icons -->
-      <div class="mt-4 space-y-3">
-        <div class="flex items-center gap-2">
-          <i class="pi pi-check-circle text-blue-600 text-lg"></i>
-          <span class="text-gray-800">Point One Description</span>
+      
+      <!-- Statistics Section -->
+      <div class="flex flex-col md:flex-row justify-center md:justify-between items-center mt-8 text-center gap-8">
+        <div class="flex-1">
+          <span class="text-2xl md:text-3xl font-semibold text-gray-800">{{ projectCount }}+</span>
+          <p class="text-gray-600 text-md">Product Lines</p>
         </div>
-        <div class="flex items-center gap-2">
-          <i class="pi pi-star text-yellow-500 text-lg"></i>
-          <span class="text-gray-800">Point Two Description</span>
+        <div class="hidden md:block w-px bg-gray-400 h-20"></div>
+        <div class="flex-1">
+          <span class="text-2xl md:text-3xl font-semibold text-gray-800">{{ expertCount }}+ Years</span>
+          <p class="text-gray-600 text-md">Industry Experience</p>
         </div>
-        <div class="flex items-center gap-2">
-          <i class="pi pi-info-circle text-green-600 text-lg"></i>
-          <span class="text-gray-800">Point Three Description</span>
+        <div class="hidden md:block w-px bg-gray-400 h-20"></div>
+        <div class="flex-1">
+          <span class="text-2xl md:text-3xl font-semibold text-gray-800">{{ satisfactionCount }}+</span>
+          <p class="text-gray-600 text-md">Serving Business Clients</p>
         </div>
       </div>
-
-      <!-- Button with Fixed Size -->
-      <button class="mt-4 px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 inline-flex w-fit">
-        Know More...
-      </button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "ResponsiveSection"
+  data() {
+    return {
+      projectCount: 0,
+      expertCount: 0,
+      satisfactionCount: 0,
+    };
+  },
+  mounted() {
+    this.animateCount("projectCount", 500);
+    this.animateCount("expertCount", 10);
+    this.animateCount("satisfactionCount", 200);
+  },
+  methods: {
+    animateCount(field, target) {
+      let count = 0;
+      const interval = setInterval(() => {
+        this[field] = count;
+        if (count >= target) clearInterval(interval);
+        count += Math.ceil(target / 50); // Speed control
+      }, 25);
+    },
+  },
 };
-
 </script>
 
-<style>
-/* Import PrimeIcons */
-@import "primeicons/primeicons.css";
+<style scoped>
+.container {
+  max-width: 1400px;
+}
 </style>
